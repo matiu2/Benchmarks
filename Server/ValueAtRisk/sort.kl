@@ -1,0 +1,46 @@
+function Size partition(
+  io Float64 a<>,
+  Size begin,
+  Size end,
+  Size pivot
+  )
+{
+  Float64 piv = a[pivot];
+  a[pivot] = a[end-1];
+  a[end-1] = piv;
+  Size store = begin;
+  for (Size i=begin; i<end-1; ++i) {
+    if (a[i] <= piv) {
+      Float64 t = a[store];
+      a[store] = a[i];
+      a[i] = t;
+      ++store;
+    }
+  }
+  Float64 t = a[end-1];
+  a[end-1] = a[store];
+  a[store] = t;
+  return store;
+}
+
+function qsort(
+  io Float64 a<>,
+  Size begin,
+  Size end
+  )
+{
+  if (end - begin <= 1)
+    return;
+  else {
+    Size pivot = partition(a, begin, end, begin+(end-begin)/2);
+    qsort(a, begin, pivot);
+    qsort(a, pivot+1, end);
+  }
+}
+
+operator sort(
+  io Float64 v<>
+  )
+{
+  qsort(v, 0, v.size);
+}
