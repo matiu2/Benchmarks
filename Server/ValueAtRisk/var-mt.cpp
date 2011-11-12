@@ -7,7 +7,7 @@
 #define NS 10
 #define CORES 8
 
-inline uint32_t initialSeed( size_t index )
+uint32_t initialSeed( size_t index )
 {
   uint32_t seed = 1;
   uint32_t mult = 300773;
@@ -22,14 +22,14 @@ inline uint32_t initialSeed( size_t index )
   return seed;
 }
 
-inline double nextUniform01( uint32_t &seed )
+double nextUniform01( uint32_t &seed )
 {
   seed = (seed * 300773) % 1073741824;
   //printf( "%u\n", (unsigned)seed );
   return double(seed) / double(1073741824.0);
 }
 
-inline double randomNormal( uint32_t &seed )
+double randomNormal( uint32_t &seed )
 {
   double x1, x2, w;
   do
@@ -42,13 +42,13 @@ inline double randomNormal( uint32_t &seed )
   return x1 * w;
 }
 
-inline void randomNormalVec( double vec[NS], uint32_t &seed )
+void randomNormalVec( double (&vec)[NS], uint32_t &seed )
 {
   for ( size_t i=0; i<NS; ++i )
     vec[i] = randomNormal( seed );
 }
 
-inline void multMatVec( double const mat[NS][NS], double const vec[NS], double res[NS] )
+void multMatVec( double const (&mat)[NS][NS], double const (&vec)[NS], double (&res)[NS] )
 {
   for ( size_t i=0; i<NS; ++i )
   {
@@ -58,13 +58,13 @@ inline void multMatVec( double const mat[NS][NS], double const vec[NS], double r
   }
 }
 
-inline double runTrial(
+double runTrial(
   size_t index,
   size_t numTradingDays,
   double dt,
   double sqrtDT,
-  double const choleskyTrans[NS][NS],
-  double const drifts[NS]
+  double const (&choleskyTrans)[NS][NS],
+  double const (&drifts)[NS]
   )
 {
   uint32_t seed = initialSeed( 4096 * (1+index) );
@@ -124,7 +124,7 @@ void *threadEntry( void *_args )
   return 0;
 }
 
-inline void trans( double A[NS][NS], double B[NS][NS] )
+void trans( double (&A)[NS][NS], double (&B)[NS][NS] )
 {
   for ( size_t i=0; i<NS; ++i )
   {
@@ -135,7 +135,7 @@ inline void trans( double A[NS][NS], double B[NS][NS] )
   }
 }
 
-inline void multMatMat( double A[NS][NS], double B[NS][NS], double R[NS][NS] )
+void multMatMat( double (&A)[NS][NS], double (&B)[NS][NS], double (&R)[NS][NS] )
 {
   for ( size_t i=0; i<NS; ++i )
   {
@@ -148,7 +148,7 @@ inline void multMatMat( double A[NS][NS], double B[NS][NS], double R[NS][NS] )
   }
 }
 
-void randomCorrelation( double R[NS][NS], uint32_t &seed )
+void randomCorrelation( double (&R)[NS][NS], uint32_t &seed )
 {
   double T[NS][NS];
   for ( size_t i=0; i<NS; ++i )
@@ -177,7 +177,7 @@ void randomCorrelation( double R[NS][NS], uint32_t &seed )
   multMatMat( TTrans, T, R );
 }
 
-void computeCholeskyTrans( double A[NS][NS], double B[NS][NS] )
+void computeCholeskyTrans( double (&A)[NS][NS], double (&B)[NS][NS] )
 {
   for ( size_t i=0; i<NS; ++i )
     for ( size_t j=0; j<NS; ++j )
